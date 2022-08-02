@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: products-deployment
+  namespace: hadiya
+  labels:
+    project: hadiya
+    app: products
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: products
+  template:
+    metadata:
+      labels:
+        project: hadiya
+        app: products
+    spec:
+      imagePullSecrets:
+        - name:  acr-secret
+      containers:
+        - name: products-api
+          image: shoaibfreeacr.azurecr.io/learning_products:v1.0
+          ports:
+            - containerPort: 3000
+          env:
+            - name: PORT
+              value: '3000'
+            - name: DB_CONNECTION_STRING
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secrets
+                  key: mysql_connection_string
+          
